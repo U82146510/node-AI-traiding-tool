@@ -2,8 +2,9 @@ import {get_data} from '../API/binance.http';
 import {info} from '../OPENAI/openai';
 
 
-export async function support_resistance() {
-    const db = [];
+
+export async function calculate() {
+    const db:Array<any> = [];
     try {
        const data = await get_data()
        data.forEach((element: string[]) => {
@@ -14,12 +15,14 @@ export async function support_resistance() {
                 close:element[4],
                 volume:element[5]
             }
-            db.push(obj);
+            db.push(obj)
        });
-       const response = await info(data) as string;
-       return JSON.parse(response);
+        const response = await info(db) as string;
+        return JSON.parse(response);
 
     } catch (error) {
         console.error(error);
     }
 };
+
+calculate()
