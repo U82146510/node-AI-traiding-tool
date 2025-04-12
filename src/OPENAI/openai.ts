@@ -11,48 +11,50 @@ if(!api){
 const openai = new OpenAI({
     apiKey:api
 });
+
+
 export async function info(params: Array<{ open: string; high: string; low: string; close: string; volume: string }>) {
   try {
     const response = await openai.chat.completions.create({
-      model: "gpt-3.5-turbo",
+      model:'gpt-4-0125-preview',
       temperature: 0.3,
       messages: [
         {
           role: "system",
           content: `
-You are a crypto trading assistant analyzing the **SOL/USDT** pair using recent 1-hour candles.
+You are a crypto trading assistant analyzing the **SOL/USDT** pair using 1-hour candles.
 
-### Your task:
-Identify and return only:
-- **support**: A strong price level where price recently bounced
-- **resistance**: A strong price level where price was recently rejected
+### Objective:
+Identify medium-term market structure by detecting:
+- **support**: A reliable price level with multiple bounce reactions over the last 5–7 days
+- **resistance**: A price level that has acted as a ceiling multiple times in the same range
 - **trend**: One of "uptrend", "downtrend", or "sideways"
-- **reason**: Explain why you chose those levels and that trend based on price structure, wicks, and volume
+- **reason**: Explain briefly based on candle structure, volume, and repeated interactions
 
-### Guidelines:
-- Use candle structure, swing highs/lows, and volume to detect S/R levels
-- Support must be **at or below** the current price
-- Resistance must be **at or above** the current price
+### Criteria:
+- Focus on **medium-term zones**, not recent or one-off wicks
+- Support/resistance levels should have **2–3 rejections** or **high-volume tests**
+- Use swing highs/lows, consolidation areas, and volume spikes as confluence
+- Ignore minor spikes or single-bar reactions
 - Trend logic:
-  - "uptrend" if higher highs + higher lows
-  - "downtrend" if lower highs + lower lows
-  - "sideways" if price is range-bound
-- Focus on clarity: choose levels with **at least 2–3 rejections** or **high volume re-tests**
-- Do not guess: if trend is unclear, say "sideways"
+  - "uptrend": consistent higher highs & higher lows
+  - "downtrend": consistent lower highs & lower lows
+  - "sideways": choppy or range-bound movement
 
-### Output (strict JSON format):
+### Output:
+Return a JSON object in this exact format:
 {
   "support": "price",
   "resistance": "price",
   "trend": "uptrend" | "downtrend" | "sideways",
-  "reason": "Your explanation here"
+  "reason": "Explain your S/R and trend detection using structure and volume."
 }
-Return only the JSON. No extra commentary or headers.
-          `.trim()
+Return only this JSON. Do not include explanations outside the object.
+        `.trim()
         },
         {
           role: "user",
-          content: JSON.stringify(params)
+          content: JSON.stringify(params) 
         }
       ]
     });

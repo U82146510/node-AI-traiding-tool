@@ -5,7 +5,7 @@ interface Data {
     open: string; high: string; low: string; close: string; volume: string;
 }
 
-export async function calculate():Promise<Data[]|undefined> {
+export async function calculate():Promise<string|undefined> {
     const db:Data[]= [];
     try {
        const data = await get_data()
@@ -20,7 +20,7 @@ export async function calculate():Promise<Data[]|undefined> {
             db.push(obj)
        });
         const response = await info(db) as string;
-        return JSON.parse(response);
+        return response
 
     } catch (error) {
         console.error(error);
