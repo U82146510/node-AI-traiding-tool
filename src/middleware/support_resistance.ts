@@ -1,10 +1,12 @@
 import {get_data} from '../API/binance.http';
 import {info} from '../OPENAI/openai';
 
+interface Data {
+    open: string; high: string; low: string; close: string; volume: string;
+}
 
-
-export async function calculate() {
-    const db:Array<any> = [];
+export async function calculate():Promise<Data[]|undefined> {
+    const db:Data[]= [];
     try {
        const data = await get_data()
        data.forEach((element: string[]) => {
