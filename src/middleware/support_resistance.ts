@@ -5,10 +5,10 @@ interface Data {
     open: string; high: string; low: string; close: string; volume: string;
 }
 
-export async function calculate():Promise<string|undefined> {
+export async function calculate(candlesticks:string):Promise<string|undefined> {
     const db:Data[]= [];
     try {
-       const data = await get_data()
+       const data = await get_data(candlesticks)
        data.forEach((element: string[]) => {
             const obj = {
                 open:element[1],
@@ -26,5 +26,3 @@ export async function calculate():Promise<string|undefined> {
         console.error(error);
     }
 };
-
-calculate()

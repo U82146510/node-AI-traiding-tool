@@ -1,12 +1,12 @@
 import {calculate} from './middleware/support_resistance';
 
-async function st(){
+async function run(candlesticks:string){
     try {
-        const response = await calculate();
+        const response = await calculate(candlesticks);
         console.log(response);
     } catch (error) {
         console.error(error);
     }
 };
 
-st()
+run("60") //inpurt of number of candlesticks
