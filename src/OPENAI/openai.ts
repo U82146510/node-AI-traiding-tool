@@ -11,103 +11,53 @@ if(!api){
 const openai = new OpenAI({
     apiKey:api
 });
-
 export async function info(params: Array<{ open: string; high: string; low: string; close: string; volume: string }>) {
   try {
-    const period = 14;
-
-    if (params.length < period + 1) {
-      throw new Error(`At least ${period + 1} candles are required to calculate ATR.`);
-    }
-
-    // ✅ ATR Calculator
-    const calculateATR = (candles: typeof params, period: number): number => {
-      const trueRanges = [];
-
-      for (let i = candles.length - period; i < candles.length; i++) {
-        const prevClose = parseFloat(candles[i - 1].close);
-        const high = parseFloat(candles[i].high);
-        const low = parseFloat(candles[i].low);
-
-        const tr = Math.max(
-          high - low,
-          Math.abs(high - prevClose),
-          Math.abs(low - prevClose)
-        );
-
-        trueRanges.push(tr);
-      }
-
-      return trueRanges.reduce((sum, tr) => sum + tr, 0) / period;
-    };
-
-    const atr = calculateATR(params, period);
-    const latestPrice = parseFloat(params[params.length - 1].close);
-    const entry = latestPrice.toFixed(2);
-
-    if (isNaN(atr) || isNaN(latestPrice)) {
-      throw new Error("Invalid data: ATR or latest price is not a number.");
-    }
-
     const response = await openai.chat.completions.create({
       model: "gpt-3.5-turbo",
+      temperature: 0.3,
       messages: [
         {
           role: "system",
           content: `
-You are a trading assistant focused on analyzing the **SOL/USDT** crypto pair using **1-hour candles**.
+You are a crypto trading assistant analyzing the **SOL/USDT** pair using recent 1-hour candles.
 
-### Input:
-- Recent 1-hour candles: ${JSON.stringify(params)}
-- ATR (Average True Range): ${atr.toFixed(2)}
-- Entry price: ${entry}
+### Your task:
+Identify and return only:
+- **support**: A strong price level where price recently bounced
+- **resistance**: A strong price level where price was recently rejected
+- **trend**: One of "uptrend", "downtrend", or "sideways"
+- **reason**: Explain why you chose those levels and that trend based on price structure, wicks, and volume
 
-### Strategy Rules:
-- This is a **long-only** strategy. No shorts.
-- Entry = ${entry} (the latest 1-hour close)
-- Only return "buy" if all risk conditions are satisfied, otherwise return "hold".
+### Guidelines:
+- Use candle structure, swing highs/lows, and volume to detect S/R levels
+- Support must be **at or below** the current price
+- Resistance must be **at or above** the current price
+- Trend logic:
+  - "uptrend" if higher highs + higher lows
+  - "downtrend" if lower highs + lower lows
+  - "sideways" if price is range-bound
+- Focus on clarity: choose levels with **at least 2–3 rejections** or **high volume re-tests**
+- Do not guess: if trend is unclear, say "sideways"
 
-### Trend Logic:
-- Detect overall trend: "uptrend", "downtrend", or "sideways"
-- Only allow "buy" if trend is **uptrend** or **sideways**
-- If trend is **downtrend**, return "hold"
-
-### Support & Resistance Logic:
-- Determine support as a strong recent bounce zone below the entry
-- Determine resistance as a level above the entry that price failed to break
-- Support must be **below** or **equal to** the entry price
-- Resistance must be **above** or **equal to** the take profit level
-
-### Entry Conditions:
-- Entry must be **within 1.5% of support**
-- If entry is **closer than 1% to resistance**, suggest "hold" unless breakout is very likely
-
-### Risk Management:
-- stop_loss = entry - 1 × ATR
-- take_profit = entry + 2 × ATR
-- reward = take_profit - entry
-- risk = entry - stop_loss
-- reward/risk must be **≥ 1.5**
-
-### Output:
-Return only this exact JSON format, using the values discussed above:
+### Output (strict JSON format):
 {
   "support": "price",
   "resistance": "price",
   "trend": "uptrend" | "downtrend" | "sideways",
-  "action": "buy" | "hold",
-  "entry": "${entry}",
-  "stop_loss": "price",
-  "take_profit": "price",
-  "reason": "Explain clearly why 'buy' or 'hold' was chosen, based on price, trend, and R/R logic."
+  "reason": "Your explanation here"
 }
+Return only the JSON. No extra commentary or headers.
           `.trim()
+        },
+        {
+          role: "user",
+          content: JSON.stringify(params)
         }
       ]
     });
 
-    const result = response.choices[0].message.content;
-    return result
+    return response.choices[0].message.content;
   } catch (error) {
     console.error("Error in info():", error);
     return null;
