@@ -17,22 +17,33 @@ const rl = readline.createInterface({
     output:process.stdout
 })
 
-function menu(){
-    console.info('\t\t\t\t\tMenu');
-    console.info('\t\t\tCalculate the support/resistance for SOLANA.\n' );
-    rl.question('Enter number of candlesticks:',async(answer:string)=>{
-        if(answer.trim().toLowerCase()==='exit'){
-            rl.close();
-            return;
-        }
-        if(/^\d+$/.test(answer)){
-            await run(answer)
-        }else{
-            console.log('\nError: enter a valid input.')
-        }
-        menu()
-    })
-
-}
+function menu() {
+    console.clear();
+    console.info('\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+    console.info('\t\t📊 SOLANA Trading Assistant');
+    console.info('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n');
+    console.info('💡 This tool helps you calculate:');
+    console.info('   • Support & Resistance levels');
+    console.info('   • Trend direction');
+    console.info('   • Risk/Reward conditions\n');
+    console.info('📥 Enter the number of candlesticks to analyze');
+    console.info('✏️ Type "exit" to quit\n');
+  
+    rl.question('🔢 Number of candlesticks: ', async (answer: string) => {
+      if (answer.trim().toLowerCase() === 'exit') {
+        rl.close();
+        return;
+      }
+  
+      if (/^\d+$/.test(answer)) {
+        await run(answer);
+      } else {
+        console.log('\n❌ Error: Please enter a valid number.\n');
+      }
+  
+      menu();
+    });
+  }
+  
 
 menu()
