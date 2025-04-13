@@ -1,5 +1,6 @@
 import { Bot } from "grammy";
 import dotenv from 'dotenv';
+import { calculate } from "../middleware/support_resistance";
 dotenv.config();
 
 const api = process.env.telegram
@@ -9,11 +10,14 @@ if(!api){
     process.exit(1);
 }
 
-const bot = new Bot(api);
+export const bot = new Bot(api);
 
 bot.command('start', (ctx) => {
-    ctx.reply(`
+    ctx.reply(
+      `
   📊 *Welcome to the SOLANA Trading Bot!*
+  
+  This bot analyzes *1-hour candles* to help you trade smarter.
   
   Here’s what I can help you with:
   ━━━━━━━━━━━━━━━━━━━━
@@ -23,11 +27,22 @@ bot.command('start', (ctx) => {
   ━━━━━━━━━━━━━━━━━━━━
   
   📥 *To begin:*
-  Please enter the _number of candlesticks_ to analyze (e.g. 60, 120, 200).
-  `);
+  Please enter the _number of 1H candlesticks_ to analyze (e.g. 60, 120, 200).
+  Type "exit" to stop the bot.
+  `,
+      { parse_mode: 'Markdown' }
+    );
   });
+  
 
-bot.on('message',(input)=>{
-    input.reply('test');
+bot.on('message',async(input)=>{
+    const candlesticks = input.message.text ? input.message.text : "120";
+    if(!/^\d+$/.test(candlesticks)){
+        input.reply('Please enter a valid number between 60 and 300');
+    }
+    const response = await calculate(candlesticks) as string;
+    const start = response.slice(8);
+    const end = start.slice(0,-4)
+    input.reply(end);
 })
 

@@ -49,7 +49,7 @@ Return a JSON object in this exact format:
   "trend": "uptrend" | "downtrend" | "sideways",
   "reason": "Explain your S/R and trend detection using structure and volume."
 }
-Return only this JSON. Do not include explanations outside the object.
+Return only this OBJECT. Do not include explanations outside the object.
         `.trim()
         },
         {

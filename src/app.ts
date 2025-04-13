@@ -1,5 +1,6 @@
 import {calculate} from './middleware/support_resistance';
 import readline from 'readline';
+import {bot} from './Telegram/bot';
 
 async function run(candlesticks:string){
     try {
@@ -17,16 +18,17 @@ const rl = readline.createInterface({
     output:process.stdout
 })
 
-function menu() {
+function start_cli() {
     console.clear();
     console.info('\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
     console.info('\t\t📊 SOLANA Trading Assistant');
     console.info('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n');
+    console.info('🕒 Timeframe: 1-Hour Candles\n');
     console.info('💡 This tool helps you calculate:');
     console.info('   • Support & Resistance levels');
     console.info('   • Trend direction');
     console.info('   • Risk/Reward conditions\n');
-    console.info('📥 Enter the number of candlesticks to analyze');
+    console.info('📥 Enter the number of 1H candlesticks to analyze');
     console.info('✏️ Type "exit" to quit\n');
   
     rl.question('🔢 Number of candlesticks: ', async (answer: string) => {
@@ -41,9 +43,11 @@ function menu() {
         console.log('\n❌ Error: Please enter a valid number.\n');
       }
   
-      menu();
+      start_cli();
     });
   }
+
   
 
-menu()
+start_cli();
+bot.start();
