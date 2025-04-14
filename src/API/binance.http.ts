@@ -7,7 +7,7 @@ const __dirname = path.dirname(__filename);
 
 dotenv.config({
     path: path.resolve(__dirname, '../.env')
-  });
+});
 
 const api = process.env.binance_http as string;
 if(!api){
@@ -15,7 +15,7 @@ if(!api){
     process.exit(1);
 }
 
-export async function get_data(candlesticks:string):Promise<any> {
+export async function get_data(candlesticks:string):Promise<[]|undefined> {
     try {
         console.log(api+candlesticks)
         const raw_data = await fetch(api+candlesticks);
