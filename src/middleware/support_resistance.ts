@@ -1,5 +1,5 @@
-import {get_data} from '../API/binance.http';
-import {info} from '../OPENAI/openai';
+import {get_data} from '../API/binance.http.ts';
+import {info} from '../OPENAI/openai.ts';
 
 interface Data {
     open: string; high: string; low: string; close: string; volume: string;

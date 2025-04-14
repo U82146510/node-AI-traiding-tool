@@ -1,7 +1,15 @@
 import { Bot } from "grammy";
 import dotenv from 'dotenv';
-import { calculate } from "../middleware/support_resistance";
-dotenv.config();
+import { calculate } from "../middleware/support_resistance.ts";
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+import path from 'path'
+
+dotenv.config({
+    path: path.resolve(__dirname, '../.env')
+  });
 
 const api = process.env.telegram
 

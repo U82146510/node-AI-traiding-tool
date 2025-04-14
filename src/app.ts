@@ -1,6 +1,6 @@
-import {calculate} from './middleware/support_resistance';
+import {calculate} from './middleware/support_resistance.ts';
 import readline from 'readline';
-import {bot} from './Telegram/bot';
+import {bot} from './Telegram/bot.ts';
 
 async function run(candlesticks:string){
     try {
