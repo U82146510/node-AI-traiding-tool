@@ -19,7 +19,6 @@ const rl = readline.createInterface({
 })
 
 function start_cli() {
-    console.clear();
     console.info('\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
     console.info('\t\t📊 SOLANA Trading Assistant');
     console.info('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n');
@@ -33,8 +32,9 @@ function start_cli() {
   
     rl.question('🔢 Number of candlesticks: ', async (answer: string) => {
       if (answer.trim().toLowerCase() === 'exit') {
+        console.log('CLI closed.');
         rl.close();
-        return;
+        process.exit(0);
       }
   
       if (/^\d+$/.test(answer)) {
