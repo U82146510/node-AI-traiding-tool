@@ -1,6 +1,6 @@
 import { Bot } from "grammy";
 import dotenv from 'dotenv';
-import { calculate } from "../middleware/support_resistance.ts";
+import { sr,rt } from "../middleware/calculate.ts";
 import { fileURLToPath } from 'url';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -45,12 +45,18 @@ bot.command('start', (ctx) => {
 
 bot.on('message',async(input)=>{
     const candlesticks = input.message.text ? input.message.text : "120";
-    if(!/^\d+$/.test(candlesticks)){
-        input.reply('Please enter a valid number between 60 and 300');
+    if(/^\d+$/.test(candlesticks)){
+      const response = await sr(candlesticks) as string;
+      const start = response.slice(8);
+      const end = start.slice(0,-4)
+      input.reply(end);
     }
-    const response = await calculate(candlesticks) as string;
-    const start = response.slice(8);
-    const end = start.slice(0,-4)
-    input.reply(end);
+    if(input.message.text==='range'){
+      const response = await rt('168') as string;
+      const start = response.slice(8);
+      const end = start.slice(0,-4)
+      input.reply(end);
+    }
+    
 })
 

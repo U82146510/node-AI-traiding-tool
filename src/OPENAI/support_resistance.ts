@@ -56,7 +56,6 @@ Return a JSON object in this exact format:
   "support": "price",
   "resistance": "price",
   "trend": "uptrend" | "downtrend" | "sideways",
-  "reason": "Explain your S/R and trend detection using structure and volume.",
   "recommandation:"Suggest if one should enter in a trade or stay away"
 }
 Return only this OBJECT. Do not include explanations outside the object.
