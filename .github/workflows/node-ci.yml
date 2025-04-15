@@ -1,24 +1,26 @@
-name: BOT
+name: BOT CI
+
 on:
-    push:
-        branches: [main]
-    pull_request:
-        branches: [main]
+    push: 
+        branches: ["main"]
+    pull_request: 
+        branches: ["main"]
+
 jobs:
-    build-test-lint:
+    bot-check:
         runs-on: ubuntu-latest
-        steps: 
-            - name: Checkout code
+        steps:
+            - name: checkout repo
               uses: actions/checkout@v3
-            - name: Setip Node.js
+            - name: setup node.js
               uses: actions/setup-node@v3
               with: 
                 node-version: '22'
             - name: Install dependencies
               run: npm install
             - name: Lint code
-              run: npm run lint || echo "No lint script defined"
-            - name: Compile TypeScript
+              run: npm run lint
+            - name: Compile Typescript
               run: npx tsc
             - name: Run test
-              run: npm test || echo "No tests yet"
+              run: npm test
