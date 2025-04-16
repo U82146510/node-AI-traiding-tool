@@ -2,6 +2,7 @@ import { Bot } from "grammy";
 import dotenv from 'dotenv';
 import { sr,rt } from "../middleware/calculate.ts";
 import { fileURLToPath } from 'url';
+import {calculate_atr} from '../middleware/atr.ts';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -57,6 +58,9 @@ bot.on('message',async(input)=>{
       const end = start.slice(0,-4)
       input.reply(end);
     }
-    
+    if(input.message.text==='atr'){
+      const response = await calculate_atr();
+      input.reply(response);
+    }
 })
 

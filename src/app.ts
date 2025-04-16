@@ -1,6 +1,7 @@
 import {sr,rt} from './middleware/calculate.ts';
 import readline from 'readline';
 import {bot} from './Telegram/bot.ts';
+import {calculate_atr} from './middleware/atr.ts';
 
 async function sr_run(candlesticks:string){  // Support & Resistance levels , Trend direction , Risk/Reward conditions\n'
     try {
@@ -58,6 +59,8 @@ function start_cli() {
       await sr_run(answer);
     } else if (answer.trim().toLowerCase() === 'range') {
       await rt_run();
+    }else if(answer.trim().toLowerCase() === 'atr'){
+      await calculate_atr()
     } else {
       console.warn('⚠️ Invalid input. Please enter a number, "range", or "exit".');
     }

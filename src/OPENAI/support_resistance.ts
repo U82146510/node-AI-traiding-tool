@@ -51,7 +51,7 @@ Identify medium-term market structure by detecting:
   - "sideways": choppy or range-bound movement
 
 ### Output:
-Return a JSON object in this exact format:
+Return a JSON object in this exact format, read the object and return what is written in it:
 {
   "support": "price",
   "resistance": "price",

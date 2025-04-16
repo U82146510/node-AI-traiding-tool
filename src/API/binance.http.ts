@@ -22,7 +22,7 @@ export async function get_data(candlesticks:string):Promise<string>{
         const final = await raw_data.json()
         return final
     } catch (error) {
-        return "no response"
         console.error(error)
+        return "no response"
     }
 }
