@@ -56,7 +56,7 @@ Return a JSON object in this exact format, read the object and return what is wr
   "support": "price",
   "resistance": "price",
   "trend": "uptrend" | "downtrend" | "sideways",
-  "recommandation:"Suggest if one should enter in a trade or stay away"
+  "recommendation:"Enter a trade" | "Stay away"
 }
 Return only this OBJECT. Do not include explanations outside the object.
         `.trim()
