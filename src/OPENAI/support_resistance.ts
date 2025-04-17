@@ -25,7 +25,7 @@ const openai = new OpenAI({
 export async function info(params: Array<{ open: string; high: string; low: string; close: string; volume: string }>) {
   try {
     const response = await openai.chat.completions.create({
-      model:'gpt-4-0125-preview',
+      model: 'gpt-4-0125-preview',
       temperature: 0.3,
       messages: [
         {
@@ -38,7 +38,8 @@ Identify medium-term market structure by detecting:
 - **support**: A reliable price level with multiple bounce reactions over the last 5–7 days
 - **resistance**: A price level that has acted as a ceiling multiple times in the same range
 - **trend**: One of "uptrend", "downtrend", or "sideways"
-- **reason**: Explain briefly based on candle structure, volume, and repeated interactions
+- **recommendation**: Suggest if one should enter a trade or stay away
+- **confidence**: Indicate how strong or reliable the recommendation is
 
 ### Criteria:
 - Focus on **medium-term zones**, not recent or one-off wicks
@@ -50,20 +51,37 @@ Identify medium-term market structure by detecting:
   - "downtrend": consistent lower highs & lower lows
   - "sideways": choppy or range-bound movement
 
+### Confidence Scoring:
+Determine how confident you are in the trade recommendation based on all of the following:
+
+1. **Trend clarity** — Higher highs/lows or lower highs/lows with clean structure
+2. **Support/resistance** — Multiple valid rejections or bounces (2 or more)
+3. **Volume confirmation** — Spikes on breakouts, tests, or key reactions
+4. **Risk/Reward** — Entry is not too close to resistance or invalidation
+
+Scoring logic:
+- Return "High" **only if all 4 criteria are clearly met**
+- Return "Medium" if 2–3 conditions are met with moderate confluence
+- Return "Low" if most conditions are unclear or weak
+
+Use only: "Low", "Medium", or "High" for the "confidence" field.
+
 ### Output:
-Return a JSON object in this exact format, read the object and return what is written in it:
+Return a JSON object in this exact format:
 {
   "support": "price",
   "resistance": "price",
   "trend": "uptrend" | "downtrend" | "sideways",
-  "recommendation:"Enter a trade" | "Stay away"
+  "recommendation": "Enter a trade" | "Stay away",
+  "confidence": "Low" | "Medium" | "High"
 }
-Return only this OBJECT. Do not include explanations outside the object.
-        `.trim()
+
+Return only this object. Do not include explanations outside the object.
+          `.trim()
         },
         {
           role: "user",
-          content: JSON.stringify(params) 
+          content: JSON.stringify(params)
         }
       ]
     });
