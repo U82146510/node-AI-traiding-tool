@@ -15,14 +15,15 @@ if(!api){
     process.exit(1);
 }
 
-export async function get_data(candlesticks:string):Promise<string>{
+export async function get_data(candlesticks:string):Promise<string[]>{
     try {
         console.log(api+candlesticks)
         const raw_data = await fetch(api+candlesticks);
         const final = await raw_data.json()
+        console.log(final)
         return final
     } catch (error) {
         console.error(error)
-        return "no response"
+        return []
     }
 }
