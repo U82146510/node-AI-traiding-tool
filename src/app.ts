@@ -2,6 +2,7 @@ import {sr,rt} from './middleware/calculate.ts';
 import readline from 'readline';
 import {bot} from './Telegram/bot.ts';
 import {calculate_atr} from './middleware/atr.ts';
+import {rsi} from './middleware/rsi.ts';
 
 async function sr_run(candlesticks:string){  // Support & Resistance levels , Trend direction , Risk/Reward conditions\n'
     try {
@@ -43,26 +44,36 @@ function start_cli() {
   console.info('       • Identify Clean Horizontal Ranges');
   console.info('       • Detect Valid Buy/Sell Zones\n');
 
+  console.info('   3️⃣  Momentum Indicators');
+  console.info('       • RSI (Relative Strength Index)');
+  console.info('       • ATR (Average True Range)\n');
+
   console.info('📥 Instructions:');
   console.info('   🔹 Enter a number (e.g. 120) to analyze that many candlesticks with the trend strategy');
   console.info('   🔹 Type "range" to run the range-trading strategy on the last 168 candles');
+  console.info('   🔹 Type "rsi" to calculate RSI');
+  console.info('   🔹 Type "atr" to calculate Average True Range');
   console.info('   🔹 Type "exit" to quit\n');
 
   rl.question('🧮 Your input: ', async (answer: string) => {
-    if (answer.trim().toLowerCase() === 'exit') {
+    const command = answer.trim().toLowerCase();
+
+    if (command === 'exit') {
       console.log('👋 CLI closed. Happy trading!');
       rl.close();
       process.exit(0);
     }
 
-    if (/^\d+$/.test(answer)) {
-      await sr_run(answer);
-    } else if (answer.trim().toLowerCase() === 'range') {
+    if (/^\d+$/.test(command)) {
+      await sr_run(command);
+    } else if (command === 'range') {
       await rt_run();
-    }else if(answer.trim().toLowerCase() === 'atr'){
-      await calculate_atr()
+    } else if (command === 'atr') {
+      await calculate_atr();
+    } else if (command === 'rsi') {
+      await rsi();
     } else {
-      console.warn('⚠️ Invalid input. Please enter a number, "range", or "exit".');
+      console.warn('⚠️ Invalid input. Please enter a number, "range", "rsi", "atr", or "exit".');
     }
 
     start_cli();
