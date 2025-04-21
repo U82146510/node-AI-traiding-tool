@@ -14,8 +14,7 @@ export async function rsi():Promise<string>{
         ccp.push(parseFloat(arg[4]))
     }
     for(let i=1;i<ccp.length;i++){
-        let range = i-1
-        cdc.push(ccp[i]-ccp[range])
+        cdc.push(ccp[i]-ccp[i-1])
     }
     for(const arg of cdc){
         if(arg>0){
