@@ -3,6 +3,7 @@ import readline from 'readline';
 import {bot} from './Telegram/bot.ts';
 import {calculate_atr} from './middleware/atr.ts';
 import {rsi} from './middleware/rsi.ts';
+import {rt_deepseek} from './middleware/calculate_deepseek.ts';
 
 async function sr_run(candlesticks:string){  // Support & Resistance levels , Trend direction , Risk/Reward conditions\n'
     try {
@@ -21,6 +22,15 @@ async function rt_run() { // range-trading strategy
     console.error(error);
   }
 };
+
+async function rt_deepseek_run() {
+    try {
+        const response = await rt_deepseek("168");
+        console.log(response);
+    } catch (error) {
+        console.error(error)
+    }
+}
 
 const rl = readline.createInterface({
     input:process.stdin,
@@ -72,6 +82,8 @@ function start_cli() {
       await calculate_atr();
     } else if (command === 'rsi') {
       await rsi();
+    } else if(command === 'ranged'){
+      await rt_deepseek_run();
     } else {
       console.warn('⚠️ Invalid input. Please enter a number, "range", "rsi", "atr", or "exit".');
     }

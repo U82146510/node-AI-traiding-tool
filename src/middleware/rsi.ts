@@ -34,7 +34,7 @@ export async function rsi():Promise<string>{
     const r_gain = av_g / 14;
     const r_losse = av_l / 14;
     const rs = r_gain/r_losse;
-    const rsi =Math.round(100-(100/(1+rs)));
+    const rsi = Math.round(100-(100/(1+rs)));
     console.log(rsi)
-    return rsi.toString(2);
+    return rsi.toFixed(2).toString();
 }

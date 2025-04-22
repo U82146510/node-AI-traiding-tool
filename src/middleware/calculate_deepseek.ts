@@ -1,6 +1,6 @@
 import {get_data} from '../API/binance.http.ts';
 import {info} from '../OPENAI/support_resistance.ts';
-import {rangeInfo} from '../OPENAI/range_traiding.ts';
+import {rangeInfo_DeepSeek} from '../DeepSeek/range_traiding.ts';
 
 
 interface Data {
@@ -31,7 +31,7 @@ export async function sr(candlesticks:string):Promise<string|undefined> {
     }
 };
 
-export async function rt(candlesticks:string):Promise<string|undefined> {
+export async function rt_deepseek(candlesticks:string):Promise<string|undefined> {
     const db:Data[]= [];
     try {
        const data = await get_data(candlesticks) // get data from binance
@@ -45,7 +45,7 @@ export async function rt(candlesticks:string):Promise<string|undefined> {
             }
             db.push(obj)
         }
-        const response = await rangeInfo(db) as string; // call to openai
+        const response = await rangeInfo_DeepSeek(db) as string; // call to openai
         return response
 
     } catch (error) {
