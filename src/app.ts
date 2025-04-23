@@ -3,7 +3,7 @@ import readline from 'readline';
 import {bot} from './Telegram/bot.ts';
 import {calculate_atr} from './middleware/atr.ts';
 import {rsi} from './middleware/rsi.ts';
-import {rt_deepseek} from './middleware/calculate_deepseek.ts';
+import {rt_deepseek,sr_DeepSeek} from './middleware/calculate_deepseek.ts';
 
 async function sr_run(candlesticks:string){  // Support & Resistance levels , Trend direction , Risk/Reward conditions\n'
     try {
@@ -12,6 +12,15 @@ async function sr_run(candlesticks:string){  // Support & Resistance levels , Tr
     } catch (error) {
         console.error(error);
     }
+};
+
+async function sr_DeepSeek_run(candlesticks:string){  // Support & Resistance levels , Trend direction , Risk/Reward conditions\n'
+  try {
+      const response = await sr_DeepSeek(candlesticks);
+      console.log(response);
+  } catch (error) {
+      console.error(error);
+  }
 };
 
 async function rt_run() { // range-trading strategy 

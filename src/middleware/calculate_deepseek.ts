@@ -1,5 +1,5 @@
 import {get_data} from '../API/binance.http.ts';
-import {info} from '../OPENAI/support_resistance.ts';
+import {info_DeepSeek} from '../DeepSeek/support_resistance.ts';
 import {rangeInfo_DeepSeek} from '../DeepSeek/range_traiding.ts';
 
 
@@ -7,7 +7,7 @@ interface Data {
     open: string; high: string; low: string; close: string; volume: string;
 }
 
-export async function sr(candlesticks:string):Promise<string|undefined> {
+export async function sr_DeepSeek(candlesticks:string):Promise<string|undefined> {
     const db:Data[]= [];
     try {
        const data = await get_data(candlesticks) // get data from binance
@@ -23,7 +23,7 @@ export async function sr(candlesticks:string):Promise<string|undefined> {
             }
            
        
-        const response = await info(db) as string; // call to openai
+        const response = await info_DeepSeek(db) as string; // call to DeepSeek
         return response
 
     } catch (error) {
@@ -45,7 +45,7 @@ export async function rt_deepseek(candlesticks:string):Promise<string|undefined>
             }
             db.push(obj)
         }
-        const response = await rangeInfo_DeepSeek(db) as string; // call to openai
+        const response = await rangeInfo_DeepSeek(db) as string; // call to DeepSeek
         return response
 
     } catch (error) {
