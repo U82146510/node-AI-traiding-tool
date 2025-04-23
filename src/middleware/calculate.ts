@@ -1,7 +1,7 @@
 import {get_data} from '../API/binance.http.ts';
 import {info} from '../OPENAI/support_resistance.ts';
 import {rangeInfo} from '../OPENAI/range_traiding.ts';
-
+import {rsi} from './rsi.ts';
 
 interface Data {
     open: string; high: string; low: string; close: string; volume: string;
@@ -45,7 +45,8 @@ export async function rt(candlesticks:string):Promise<string|undefined> {
             }
             db.push(obj)
         }
-        const response = await rangeInfo(db) as string; // call to openai
+        const rsi_result = await rsi()
+        const response = await rangeInfo(db,rsi_result) as string; // call to openai
         return response
 
     } catch (error) {

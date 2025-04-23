@@ -23,7 +23,7 @@ const openai = new OpenAI({
 
 
 
-export async function rangeInfo(params: Array<{ open: string; high: string; low: string; close: string; volume: string }>) {
+export async function rangeInfo(params: Array<{ open: string; high: string; low: string; close: string; volume: string }>,rsi:string) {
   try {
     const response = await openai.chat.completions.create({
       model: 'gpt-4-0125-preview',
@@ -42,6 +42,12 @@ Identify valid **range-bound trading opportunities** by detecting:
 - **Recommendation**: If the range is valid, suggest "Buy near support, sell near resistance". Otherwise, suggest "Stay away"
 - **Confidence**: Estimate how reliable this range setup is
 
+### RSI Filter:
+- Current RSI(14) = **${rsi}**
+- If RSI > 60 → Market may be overbought, suggest caution or "Stay away"
+- If RSI < 40 → Market may be oversold, suggest caution or "Stay away"
+- If RSI is 40–60 → Neutral and range trades are valid
+
 ### Range Criteria:
 - Range must exist for at least 2–3 days (i.e., multiple price cycles between levels)
 - Support and resistance must each have at least **2 clear bounce or rejection points**
@@ -55,10 +61,11 @@ Score the quality of the range using:
 2. **Rejection strength** — Are reactions decisive or weak?
 3. **Volume behavior** — Is volume decreasing near the middle and spiking at edges?
 4. **Breakout risk** — Is price staying contained or coiling for breakout?
+5. **RSI context** — Is RSI supporting a range setup?
 
 Scoring logic:
-- Return "High" only if all 4 criteria are clearly met
-- Return "Medium" if 2–3 are met with decent structure
+- Return "High" only if all 5 criteria are clearly met
+- Return "Medium" if 3–4 are met with decent structure
 - Return "Low" if the range is loose, noisy, or risky
 
 Use only: "Low", "Medium", or "High" for the "confidence" field.
@@ -75,7 +82,7 @@ Return a JSON object in this exact format:
 }
 
 Return ONLY this object. Do not include explanations outside the object.
-        `.trim()
+`.trim()
         },
         {
           role: "user",

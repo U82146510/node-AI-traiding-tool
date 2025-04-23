@@ -4,6 +4,7 @@ import { sr,rt } from "../middleware/calculate.ts";
 import { fileURLToPath } from 'url';
 import {calculate_atr} from '../middleware/atr.ts';
 import {rsi} from '../middleware/rsi.ts';
+import {rt_deepseek} from '../middleware/calculate_deepseek.ts';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -52,15 +53,21 @@ Here’s what I can help you with:
   
 
 bot.on('message',async(input)=>{
-    const candlesticks = input.message.text ? input.message.text : "120";
-    if(/^\d+$/.test(candlesticks)){
-      const response = await sr(candlesticks) as string;
+    
+    if(input.message.text?.toLowerCase()==='trend'){
+      const response = await sr("200") as string;
       const start = response.slice(8);
       const end = start.slice(0,-4)
       input.reply(end);
     }
-    if(input.message.text?.toLowerCase()==='range'){
-      const response = await rt('168') as string;
+    if(input.message.text?.toLowerCase()==='range'){  // for OpenAI model
+      const response = await rt('100') as string;
+      const start = response.slice(8);
+      const end = start.slice(0,-4)
+      input.reply(end);
+    }
+    if(input.message.text?.toLowerCase()==='ranged'){ // for DeepSeek model
+      const response = await rt_deepseek('100') as string;
       const start = response.slice(8);
       const end = start.slice(0,-4)
       input.reply(end);

@@ -36,7 +36,7 @@ export class DeepSeekAI{
                     Authorization: `Bearer ${this.api_key}`,
                 },
                 body:JSON.stringify({
-                    model,messages,temperature:0.7,max_tokens: 1000
+                    model,messages,temperature:0.3,max_tokens: 1000
                 })
             });
             if(!response.ok){

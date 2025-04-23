@@ -1,66 +1,88 @@
-import {DeepSeekAI} from '../DeepSeek/deepseek.ts';
+import { DeepSeekAI } from '../DeepSeek/deepseek.ts';
 
 type Message = {
-    role: "user"|"assistant"|"system";
-    content:string;
+  role: "user" | "assistant" | "system";
+  content: string;
 };
 
-export async function rangeInfo_DeepSeek(params:Array<{ open: string; high: string; low: string; close: string; volume: string }>) {
-     try {
-        const deepseek = new DeepSeekAI();
-        const messages: Message[] = [
-            {
-                role: "system",
-                content: `
-      You are a crypto trading assistant analyzing the **SOL/USDT** pair using 1-hour candles.
-      
-      ### Objective:
-      Identify valid **range-bound trading opportunities** by detecting:
-      - **Support**: A level tested at least 2 times with price bouncing from it
-      - **Resistance**: A level tested at least 2 times with price rejected from it
-      - **Range Validity**: Confirm that price is moving between these levels without breakout
-      - **Recommendation**: If the range is valid, suggest "Buy near support, sell near resistance". Otherwise, suggest "Stay away"
-      - **Confidence**: Estimate how reliable this range setup is
-      
-      ### Range Criteria:
-      - Range must exist for at least 2–3 days (i.e., multiple price cycles between levels)
-      - Support and resistance must each have at least **2 clear bounce or rejection points**
-      - There must be no strong breakout candles (with high volume) outside the range
-      - Ignore minor wicks, anomalies, and unconfirmed touches
-      - Only suggest trades if the range looks stable, predictable, and clean
-      
-      ### Confidence Scoring:
-      Score the quality of the range using:
-      1. **Clarity of range** — Is price cleanly bouncing between two levels?
-      2. **Rejection strength** — Are reactions decisive or weak?
-      3. **Volume behavior** — Is volume decreasing near the middle and spiking at edges?
-      4. **Breakout risk** — Is price staying contained or coiling for breakout?
-      
-      Scoring logic:
-      - Return "High" only if all 4 criteria are clearly met
-      - Return "Medium" if 2–3 are met with decent structure
-      - Return "Low" if the range is loose, noisy, or risky
-      
-      Use only: "Low", "Medium", or "High" for the "confidence" field.
-      
-      ### Output:
-      Return a JSON object in this exact format:
-      
+export async function rangeInfo_DeepSeek(params: Array<{ 
+  open: string; 
+  high: string; 
+  low: string; 
+  close: string; 
+  volume: string 
+}>, rsi: string) {
+  try {
+    const deepseek = new DeepSeekAI();
+    const messages: Message[] = [
       {
-        "support": "price",
-        "resistance": "price",
-        "range_valid": true | false,
-        "recommendation": "Buy near support, sell near resistance" | "Stay away",
-        "confidence": "Low" | "Medium" | "High"
+        role: "system",
+        content: `
+          You are a crypto trading AI analyzing SOL/USDT for range-bound opportunities using 1-hour candles.
+
+          ### Objectives:
+          1. Define Support/Resistance (S/R):
+             - Identify at least 2 clear price rejections/bounces (±1%).
+             - Ignore single wicks or unconfirmed touches.
+             - Levels must hold for ≥48 hours.
+          
+          2. Validate Range:
+             - Reject if RSI(14) > 60 (overbought) or < 40 (oversold).
+             - Current RSI: ${rsi} (neutral if 40-60).
+             - Breakout attempts must fail (close back inside range).
+
+          3. Output Requirements (JSON):
+          {
+            "support": number|null,  // Price or null if invalid
+            "resistance": number|null,
+            "range_valid": boolean,
+            "recommendation": string, // "Buy near [support]" or "Avoid: [reason]"
+            "confidence": "Low"|"Medium"|"High",
+            "liquidity_sweeps": {
+              "support_sweep": boolean, // True if wicks below support reversed
+              "resistance_sweep": boolean
+            }
+          }
+
+          ### Examples:
+          Valid Range (RSI ${rsi} = neutral):
+          {
+            "support": 133.00,
+            "resistance": 152.50,
+            "range_valid": true,
+            "recommendation": "Buy near 133.00, sell near 152.50",
+            "confidence": "High",
+            "liquidity_sweeps": {"support_sweep": true, "resistance_sweep": false}
+          }
+
+          Invalid Range (RSI ${rsi} = overbought):
+          {
+            "support": null,
+            "resistance": null,
+            "range_valid": false,
+            "recommendation": "Avoid: RSI ${rsi} > 60 (overbought)",
+            "confidence": "Low",
+            "liquidity_sweeps": {"support_sweep": false, "resistance_sweep": false}
+          }
+        `.trim()
+      },
+      {
+        role: "user",
+        content: JSON.stringify(params) // Your OHLCV data
       }
-      
-      Return ONLY this object. Do not include explanations outside the object.
-              `.trim()
-              }
-        ]
-        const response = await deepseek.askAi(messages);
-        return response
-    } catch (error) {
-        console.error(error);
-    }
+    ];
+
+    const response = await deepseek.askAi(messages);
+    return response;
+  } catch (error) {
+    console.error(error);
+    return {
+      support: null,
+      resistance: null,
+      range_valid: false,
+      recommendation: `Error: ${error}`,
+      confidence: "Low",
+      liquidity_sweeps: { support_sweep: false, resistance_sweep: false }
+    };
+  }
 }

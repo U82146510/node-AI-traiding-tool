@@ -3,7 +3,7 @@ import readline from 'readline';
 import {bot} from './Telegram/bot.ts';
 import {calculate_atr} from './middleware/atr.ts';
 import {rsi} from './middleware/rsi.ts';
-import {rt_deepseek,sr_DeepSeek} from './middleware/calculate_deepseek.ts';
+import {rt_deepseek} from './middleware/calculate_deepseek.ts';
 
 async function sr_run(candlesticks:string){  // Support & Resistance levels , Trend direction , Risk/Reward conditions\n'
     try {
@@ -14,27 +14,19 @@ async function sr_run(candlesticks:string){  // Support & Resistance levels , Tr
     }
 };
 
-async function sr_DeepSeek_run(candlesticks:string){  // Support & Resistance levels , Trend direction , Risk/Reward conditions\n'
-  try {
-      const response = await sr_DeepSeek(candlesticks);
-      console.log(response);
-  } catch (error) {
-      console.error(error);
-  }
-};
 
-async function rt_run() { // range-trading strategy 
+async function rt_run() { // range-trading strategy OpenAI
   try {
-    const response = await rt("168");
+    const response = await rt("100");
     console.log(response)
   } catch (error) {
     console.error(error);
   }
 };
 
-async function rt_deepseek_run() {
+async function rt_deepseek_run() { // range-trading strategy DeepSeek
     try {
-        const response = await rt_deepseek("168");
+        const response = await rt_deepseek("100");
         console.log(response);
     } catch (error) {
         console.error(error)
@@ -83,7 +75,7 @@ function start_cli() {
       process.exit(0);
     }
 
-    if (/^\d+$/.test(command)) {
+    if (command === 'trend') {
       await sr_run(command);
     } else if (command === 'range') {
       await rt_run();
