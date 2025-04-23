@@ -43,7 +43,7 @@ function start_cli() {
   console.info('🟣        📊 SOLANA Trading Assistant');
   console.info('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n');
   
-  console.info('🕒  Timeframe: 1-Hour Candles\n');
+  console.info('🕒  Timeframe: 1-Hour Candles (M5 entry signals for DeepSeek)\n');
   
   console.info('📈 Available Analysis Options:');
   console.info('   1️⃣  Trend-based Strategy');
@@ -51,20 +51,27 @@ function start_cli() {
   console.info('       • Identify Trend Direction');
   console.info('       • Estimate Risk/Reward Levels\n');
   
-  console.info('   2️⃣  Range-trading Strategy');
+  console.info('   2️⃣  Range-trading Strategy (OpenAI)');
   console.info('       • Identify Clean Horizontal Ranges');
   console.info('       • Detect Valid Buy/Sell Zones\n');
 
-  console.info('   3️⃣  Momentum Indicators');
+  console.info('   3️⃣  Range-trading Strategy (DeepSeek)');
+  console.info('       • H1 Support/Resistance');
+  console.info('       • M5 Liquidity Sweeps & Entry Signals');
+  console.info('       • Confidence-Scored Trade Recommendations\n');
+
+  console.info('   4️⃣  Momentum Indicators');
   console.info('       • RSI (Relative Strength Index)');
   console.info('       • ATR (Average True Range)\n');
 
   console.info('📥 Instructions:');
   console.info('   🔹 Enter a number (e.g. 120) to analyze that many candlesticks with the trend strategy');
-  console.info('   🔹 Type "range" to run the range-trading strategy on the last 168 candles');
-  console.info('   🔹 Type "rsi" to calculate RSI');
-  console.info('   🔹 Type "atr" to calculate Average True Range');
-  console.info('   🔹 Type "exit" to quit\n');
+  console.info('   🔹 Type "range"  → run the range-trading strategy (OpenAI)');
+  console.info('   🔹 Type "ranged" → run the range-trading strategy (DeepSeek)');
+  console.info('   🔹 Type "rsi"    → calculate RSI');
+  console.info('   🔹 Type "atr"    → calculate Average True Range');
+  console.info('   🔹 Type "exit"   → quit\n');
+
 
   rl.question('🧮 Your input: ', async (answer: string) => {
     const command = answer.trim().toLowerCase();
