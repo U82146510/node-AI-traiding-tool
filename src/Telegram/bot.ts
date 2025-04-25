@@ -26,7 +26,8 @@ export const bot = new Bot(api);
 // 🔘 Menu keyboard
 const menu = new Keyboard()
   .text("trend").text("scalp").text("ranged").row()
-  .text("rsi").text("atr").text("exit")
+  .text("rsi").text("atr").text("exit").row()
+  .text("rsi5min")
   .resized(); // fit to screen
 
 // ✅ Start command with buttons
@@ -64,6 +65,9 @@ bot.on('message', async (input) => {
       await input.reply(result, { reply_markup: menu });
     } else if (text === 'rsi') {
       const response = await rsi();
+      await input.reply(response, { reply_markup: menu });
+    }else if(text === 'rsi5min'){
+      const response = await rsi("5m");
       await input.reply(response, { reply_markup: menu });
     } else if (text === 'atr') {
       const response = await calculate_atr();

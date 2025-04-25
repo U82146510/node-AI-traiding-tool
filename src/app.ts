@@ -86,6 +86,8 @@ function start_cli() {
       await sr_run(command);
     } else if (command === 'scalp') {
       await rt_run();
+    } else if(command==='rsi5min'){
+      await rsi('5m');
     } else if (command === 'atr') {
       await calculate_atr();
     } else if (command === 'rsi') {

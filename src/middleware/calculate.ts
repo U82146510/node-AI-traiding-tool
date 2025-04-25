@@ -53,7 +53,7 @@ export async function rt(limit:string):Promise<string|undefined> { //50
             high:yesterday[2],
             low:yesterday[3]
         }
-        const rsi_result = await rsi()
+        const rsi_result = await rsi("5m");
         const response = await rangeInfo(db,rsi_result,open_close) as string; // call to openai
         return response
 
