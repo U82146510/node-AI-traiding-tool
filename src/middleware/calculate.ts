@@ -31,10 +31,10 @@ export async function sr(candlesticks:string):Promise<string|undefined> {
     }
 };
 
-export async function rt(candlesticks:string):Promise<string|undefined> {
+export async function rt(limit:string):Promise<string|undefined> { //50
     const db:Data[]= [];
     try {
-       const data = await get_data(candlesticks) // get data from binance
+       const data = await get_data(limit,"5m") // get data from binance
        for(const element of data){
             const obj = {
                 open:element[1],
@@ -45,8 +45,16 @@ export async function rt(candlesticks:string):Promise<string|undefined> {
             }
             db.push(obj)
         }
+        const previous_day = await get_data("2","1d");
+        const [yesterday, today] = previous_day;
+        const open_close:{
+            high:string,low:string
+        } = {
+            high:yesterday[2],
+            low:yesterday[3]
+        }
         const rsi_result = await rsi()
-        const response = await rangeInfo(db,rsi_result) as string; // call to openai
+        const response = await rangeInfo(db,rsi_result,open_close) as string; // call to openai
         return response
 
     } catch (error) {

@@ -1,26 +1,13 @@
-import dotenv from 'dotenv';
-import path from "path";
-import { fileURLToPath } from 'url';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-dotenv.config({
-    path: path.resolve(__dirname, '../.env')
-});
-
-const api = process.env.binance_http as string;
-if(!api){
-    console.error('missing binance http string');
-    process.exit(1);
-}
-
-export async function get_data(candlesticks:string):Promise<string[]>{
+export async function get_data(limit:string,interval:"1m"|"5m"|"15m"|"30m"|"1h"|"4h"|"1d"="1h"):Promise<any[]>{
+    const api = `https://api.binance.com/api/v3/klines?symbol=SOLUSDT&interval=${interval}&limit=${limit}`
     try {
-        console.log(api+candlesticks)
-        const raw_data = await fetch(api+candlesticks);
+
+        const raw_data = await fetch(api);
+        if (!raw_data.ok) {
+            throw new Error(`Failed to fetch: ${raw_data.statusText}`);
+         }
         const final = await raw_data.json()
-         return final
+        return final
     } catch (error) {
         console.error(error)
         return []

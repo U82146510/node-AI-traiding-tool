@@ -1,4 +1,4 @@
-import { Bot } from "grammy";
+import { Bot, Keyboard } from "grammy";
 import dotenv from 'dotenv';
 import { sr, rt } from "../middleware/calculate.ts";
 import { fileURLToPath } from 'url';
@@ -23,66 +23,58 @@ if (!api) {
 
 export const bot = new Bot(api);
 
-// ✅ /start command with correct full menu
+// 🔘 Menu keyboard
+const menu = new Keyboard()
+  .text("trend").text("scalp").text("ranged").row()
+  .text("rsi").text("atr").text("exit")
+  .resized(); // fit to screen
+
+// ✅ Start command with buttons
 bot.command('start', (ctx) => {
   ctx.reply(
     `
 📊 *Welcome to the SOLANA Trading Bot!*
 
-This bot analyzes *1-hour candles* to help you trade smarter.
-
-Here’s what I can help you with:
-━━━━━━━━━━━━━━━━━━━━
-🔹 *Support & Resistance Analysis*      → "trend"
-🔹 *Trend Detection (OpenAI)*           → "range"
-🔹 *Range-Trading (DeepSeek)*           → "ranged"
-🔹 *RSI (Relative Strength Index)*      → "rsi"
-🔹 *ATR (Average True Range)*           → "atr"
-━━━━━━━━━━━━━━━━━━━━
-
-📥 *To begin:*
-- Type a number to analyze that many 1H candlesticks (e.g. 60, 120, 200)
-- Type "trend"   → Detect support, resistance, and trend direction
-- Type "range"   → OpenAI-based range-trading strategy
-- Type "ranged"  → DeepSeek-based range-trading strategy
-- Type "rsi"     → Calculate RSI
-- Type "atr"     → Calculate ATR
-- Type "exit"    → Stop the bot
+Tap a button below to start your analysis:
     `,
-    { parse_mode: 'Markdown' }
+    {
+      parse_mode: 'Markdown',
+      reply_markup: menu
+    }
   );
 });
 
-// ✅ Main command handler
+// ✅ Respond to button taps
 bot.on('message', async (input) => {
-  if (input.message.text?.toLowerCase() === 'trend') {
-    const response = await sr("200") as string;
-    const start = response.slice(8);
-    const end = start.slice(0, -4);
-    input.reply(end);
-  }
+  const text = input.message.text?.toLowerCase();
+  if (!text) return;
 
-  if (input.message.text?.toLowerCase() === 'range') { // for OpenAI model
-    const response = await rt('100') as string;
-    const start = response.slice(8);
-    const end = start.slice(0, -4);
-    input.reply(end);
-  }
-
-  if (input.message.text?.toLowerCase() === 'ranged') { // for DeepSeek model
-    const response = await rt_deepseek('100') as string;
-    const start = response.slice(8);
-    const end = start.slice(0, -4);
-    input.reply(end);
-  }
-
-  if (input.message.text?.toLowerCase() === 'atr') {
-    const response = await calculate_atr();
-    input.reply(response);
-  }
-
-  if (input.message.text?.toLowerCase() === 'rsi') {
-    const response = await rsi();
-    input.reply(response);
+  try {
+    if (text === 'trend') {
+      const response = await sr("200") as string;
+      const result = response.slice(8, -4);
+      await input.reply(result, { reply_markup: menu });
+    } else if (text === 'scalp') {
+      const response = await rt('50') as string;
+      const result = response.slice(8, -4);
+      await input.reply(result, { reply_markup: menu });
+    } else if (text === 'ranged') {
+      const response = await rt_deepseek('100') as string;
+      const result = response.slice(8, -4);
+      await input.reply(result, { reply_markup: menu });
+    } else if (text === 'rsi') {
+      const response = await rsi();
+      await input.reply(response, { reply_markup: menu });
+    } else if (text === 'atr') {
+      const response = await calculate_atr();
+      await input.reply(response, { reply_markup: menu });
+    } else if (text === 'exit') {
+      await input.reply("👋 Bot session ended. Type /start to begin again.");
+    } else {
+      await input.reply("❌ Invalid command. Use the menu below.", { reply_markup: menu });
+    }
+  } catch (err) {
+    console.error("Bot error:", err);
+    await input.reply("❌ An error occurred while processing your request.", { reply_markup: menu });
   }
 });

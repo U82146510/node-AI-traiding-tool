@@ -17,7 +17,7 @@ async function sr_run(candlesticks:string){  // Support & Resistance levels , Tr
 
 async function rt_run() { // range-trading strategy OpenAI
   try {
-    const response = await rt("100");
+    const response = await rt("50");
     console.log(response)
   } catch (error) {
     console.error(error);
@@ -84,7 +84,7 @@ function start_cli() {
 
     if (command === 'trend') {
       await sr_run(command);
-    } else if (command === 'range') {
+    } else if (command === 'scalp') {
       await rt_run();
     } else if (command === 'atr') {
       await calculate_atr();

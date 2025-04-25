@@ -23,7 +23,10 @@ const openai = new OpenAI({
 
 
 
-export async function rangeInfo(params: Array<{ open: string; high: string; low: string; close: string; volume: string }>,rsi:string) {
+export async function rangeInfo(
+  params: Array<{ open: string; high: string; low: string; close: string; volume: string }>,
+  rsi:string,
+  dailyLevels: { high: string; low: string }) {
   try {
     const response = await openai.chat.completions.create({
       model: 'gpt-4-0125-preview',
@@ -32,56 +35,44 @@ export async function rangeInfo(params: Array<{ open: string; high: string; low:
         {
           role: "system",
           content: `
-You are a crypto trading assistant analyzing the **SOL/USDT** pair using 1-hour candles.
+You are a professional crypto trading algorithm analyzing SOL/USDT 5-minute charts for high-probability scalping opportunities.
 
-### Objective:
-Identify valid **range-bound trading opportunities** by detecting:
-- **Support**: A level tested at least 2 times with price bouncing from it
-- **Resistance**: A level tested at least 2 times with price rejected from it
-- **Range Validity**: Confirm that price is moving between these levels without breakout
-- **Recommendation**: If the range is valid, suggest "Buy near support, sell near resistance". Otherwise, suggest "Stay away"
-- **Confidence**: Estimate how reliable this range setup is
+### Core Rules:
+1. Support/Resistance Identification:
+   - Requires ≥2 CLEAR price reactions (bounces/rejections) within last 20 candles
+   - Levels must show:
+     * Visible liquidity (volume spikes + order book confirmation)
+     * Confluence with:
+       - 61.8% or 78.6% Fibonacci retracement
+       - Previous daily high: ${dailyLevels.high}
+       - Previous daily low: ${dailyLevels.low}
+   - Round to 2 decimals (e.g., 142.67)
 
-### RSI Filter:
-- Current RSI(14) = **${rsi}**
-- If RSI > 60 → Market may be overbought, suggest caution or "Stay away"
-- If RSI < 40 → Market may be oversold, suggest caution or "Stay away"
-- If RSI is 40–60 → Neutral and range trades are valid
+2. RSI Context (${rsi}):
+   - <30 or >70: Only trade with trend confirmation
+   - 30-70: Neutral (preferred)
+   - Divergence overrides level priority
 
-### Range Criteria:
-- Range must exist for at least 2–3 days (i.e., multiple price cycles between levels)
-- Support and resistance must each have at least **2 clear bounce or rejection points**
-- There must be no strong breakout candles (with high volume) outside the range
-- Ignore minor wicks, anomalies, and unconfirmed touches
-- Only suggest trades if the range looks stable, predictable, and clean
+3. Wick Handling:
+   - Ignore single wicks <0.5% of candle range
+   - Consider wicks with:
+     * ≥2x average volume
+     * Consecutive rejections
 
-### Confidence Scoring:
-Score the quality of the range using:
-1. **Clarity of range** — Is price cleanly bouncing between two levels?
-2. **Rejection strength** — Are reactions decisive or weak?
-3. **Volume behavior** — Is volume decreasing near the middle and spiking at edges?
-4. **Breakout risk** — Is price staying contained or coiling for breakout?
-5. **RSI context** — Is RSI supporting a range setup?
-
-Scoring logic:
-- Return "High" only if all 5 criteria are clearly met
-- Return "Medium" if 3–4 are met with decent structure
-- Return "Low" if the range is loose, noisy, or risky
-
-Use only: "Low", "Medium", or "High" for the "confidence" field.
-
-### Output:
-Return a JSON object in this exact format:
-
+4. Output Format (STRICT JSON):
 {
-  "support": "price",
-  "resistance": "price",
-  "range_valid": true | false,
-  "recommendation": "Buy near support, sell near resistance" | "Stay away",
-  "confidence": "Low" | "Medium" | "High"
+  "support": number | null,
+  "resistance": number | null,
+  "confidence": "Low"|"Medium"|"High",
+  "stopLoss": number | null,
+  "target": number | null,
+  "comment": "Max 15 words"
 }
 
-Return ONLY this object. Do not include explanations outside the object.
+### Prohibited:
+- Predicting price direction
+- Levels without volume confirmation
+- Over 3 levels per side
 `.trim()
         },
         {
