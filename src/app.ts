@@ -1,19 +1,9 @@
-import {sr,rt} from './middleware/calculate.ts';
+import {rt} from './middleware/calculate.ts';
 import readline from 'readline';
 import {bot} from './Telegram/bot.ts';
 import {calculate_atr} from './middleware/atr.ts';
 import {rsi} from './middleware/rsi.ts';
 import {rt_deepseek} from './middleware/calculate_deepseek.ts';
-
-async function sr_run(candlesticks:string){  // Support & Resistance levels , Trend direction , Risk/Reward conditions\n'
-    try {
-        const response = await sr(candlesticks);
-        console.log(response);
-    } catch (error) {
-        console.error(error);
-    }
-};
-
 
 async function rt_run() { // range-trading strategy OpenAI
   try {
@@ -82,17 +72,17 @@ function start_cli() {
       process.exit(0);
     }
 
-    if (command === 'trend') {
-      await sr_run(command);
+    if (command === 'atr') {
+      await calculate_atr();
     } else if (command === 'scalp') {
       await rt_run();
     } else if(command==='rsi5min'){
       await rsi('5m');
-    } else if (command === 'atr') {
-      await calculate_atr();
+    } else if (command === 'atr5min') {
+      await calculate_atr("5m");
     } else if (command === 'rsi') {
       await rsi();
-    } else if(command === 'ranged'){
+    } else if(command === 'range'){
       await rt_deepseek_run();
     } else {
       console.warn('⚠️ Invalid input. Please enter a number, "range", "rsi", "atr", or "exit".');
