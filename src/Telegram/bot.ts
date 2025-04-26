@@ -1,6 +1,6 @@
 import { Bot, Keyboard } from "grammy";
 import dotenv from 'dotenv';
-import { rt } from "../middleware/calculate.ts";
+import { scalp } from "../middleware/calculate.ts";
 import { fileURLToPath } from 'url';
 import { calculate_atr } from '../middleware/atr.ts';
 import { rsi } from '../middleware/rsi.ts';
@@ -54,7 +54,7 @@ bot.on('message', async (input) => {
       const response = await calculate_atr();
       await input.reply(response, { reply_markup: menu });
     } else if (text === 'atr') {
-      const response = await rt('50') as string;
+      const response = await scalp('50') as string;
       const result = response.slice(8, -4);
       await input.reply(result, { reply_markup: menu });
     } else if (text === 'range') {

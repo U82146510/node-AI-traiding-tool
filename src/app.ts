@@ -1,13 +1,13 @@
-import {rt} from './middleware/calculate.ts';
+import {scalp} from './middleware/calculate.ts';
 import readline from 'readline';
 import {bot} from './Telegram/bot.ts';
 import {calculate_atr} from './middleware/atr.ts';
 import {rsi} from './middleware/rsi.ts';
 import {rt_deepseek} from './middleware/calculate_deepseek.ts';
 
-async function rt_run() { // range-trading strategy OpenAI
+async function scalp_run() { // range-trading strategy OpenAI
   try {
-    const response = await rt("50");
+    const response = await scalp("50");
     console.log(response)
   } catch (error) {
     console.error(error);
@@ -75,7 +75,7 @@ function start_cli() {
     if (command === 'atr') {
       await calculate_atr();
     } else if (command === 'scalp') {
-      await rt_run();
+      await scalp_run();
     } else if(command==='rsi5min'){
       await rsi('5m');
     } else if (command === 'atr5min') {
