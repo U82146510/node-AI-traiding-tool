@@ -7,7 +7,7 @@ import {rt_deepseek} from './middleware/calculate_deepseek.ts';
 
 async function scalp_run() { // range-trading strategy OpenAI
   try {
-    const response = await scalp("50");
+    const response = await scalp("30");
     console.log(response)
   } catch (error) {
     console.error(error);

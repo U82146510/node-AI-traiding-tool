@@ -23,10 +23,11 @@ const openai = new OpenAI({
 
 
 
-export async function rangeInfo(
+export async function scalpInfo(
   params: Array<{ open: string; high: string; low: string; close: string; volume: string }>,
   rsi:string,
-  dailyLevels: { high: string; low: string }) {
+  dailyLevels: { high: string; low: string },
+) {
   try {
     const response = await openai.chat.completions.create({
       model: 'gpt-4-0125-preview',
@@ -64,8 +65,6 @@ You are a professional crypto trading algorithm analyzing SOL/USDT 5-minute char
   "support": number | null,
   "resistance": number | null,
   "confidence": "Low"|"Medium"|"High",
-  "stopLoss": number | null,
-  "target": number | null,
   "comment": "Max 15 words"
 }
 

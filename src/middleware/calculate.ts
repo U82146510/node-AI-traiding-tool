@@ -1,6 +1,7 @@
 import {get_data} from '../API/binance.http.ts';
-import {rangeInfo} from '../OPENAI/range_traiding.ts';
+import {scalpInfo} from '../OPENAI/scalp_traiding.ts';
 import {rsi} from './rsi.ts';
+import {calculate_atr} from '../middleware/atr.ts';
 
 interface Data {
     open: string; high: string; low: string; close: string; volume: string;
@@ -29,7 +30,8 @@ export async function scalp(limit:string):Promise<string|undefined> { //50
             low:yesterday[3]
         }
         const rsi_result = await rsi("5m");
-        const response = await rangeInfo(db,rsi_result,open_close) as string; // call to openai
+        const atr = await calculate_atr("5m")
+        const response = await scalpInfo(db,rsi_result,open_close) as string; // call to openai
         return response
 
     } catch (error) {

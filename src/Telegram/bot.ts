@@ -44,7 +44,7 @@ Tap a button below to start your analysis:
   );
 });
 
-// ✅ Respond to button taps
+
 bot.on('message', async (input) => {
   const text = input.message.text?.toLowerCase();
   if (!text) return;
@@ -52,11 +52,11 @@ bot.on('message', async (input) => {
   try {
     if (text === 'atr') {
       const response = await calculate_atr();
-      await input.reply(response, { reply_markup: menu });
-    } else if (text === 'atr') {
-      const response = await scalp('50') as string;
-      const result = response.slice(8, -4);
-      await input.reply(result, { reply_markup: menu });
+      await input.reply(`Live: ${response.live_price.toString()}\nPofit: ${response.profit.toString()}\nStop: ${response.stop_loss.toString()}`, 
+      { reply_markup: menu });
+    } else if (text === 'scalp') {
+      const response = await scalp('30') as string;
+       await input.reply(response, { reply_markup: menu });
     } else if (text === 'range') {
       const response = await rt_deepseek('100') as string;
       const result = response.slice(8, -4);
@@ -69,7 +69,8 @@ bot.on('message', async (input) => {
       await input.reply(response, { reply_markup: menu });
     } else if (text === 'atr5min') {
       const response = await calculate_atr("5m");
-      await input.reply(response, { reply_markup: menu });
+      await input.reply(`Live: ${response.live_price.toString()}\nPofit: ${response.profit.toString()}\nStop: ${response.stop_loss.toString()}`, 
+      { reply_markup: menu });
     } else if (text === 'exit') {
       await input.reply("👋 Bot session ended. Type /start to begin again.");
     } else {
