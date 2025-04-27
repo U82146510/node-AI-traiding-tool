@@ -1,7 +1,8 @@
 import {get_data} from '../API/binance.http.ts';
 import {scalpInfo} from '../OPENAI/scalp_traiding.ts';
 import {rsi} from './rsi.ts';
-import {calculate_atr} from '../middleware/atr.ts';
+import {vwap} from '../middleware/vwap.ts';
+
 
 interface Data {
     open: string; high: string; low: string; close: string; volume: string;
@@ -21,17 +22,14 @@ export async function scalp(limit:string):Promise<string|undefined> { //50
             }
             db.push(obj)
         }
-        const previous_day = await get_data("2","1d");
-        const [yesterday, today] = previous_day;
-        const open_close:{
-            high:string,low:string
-        } = {
-            high:yesterday[2],
-            low:yesterday[3]
-        }
+        const live_data = await get_data("1","5m");
+
+        const live_price = live_data[0][4];
         const rsi_result = await rsi("5m");
-        const atr = await calculate_atr("5m")
-        const response = await scalpInfo(db,rsi_result,open_close) as string; // call to openai
+        const vwap_result = await vwap();
+
+
+        const response = await scalpInfo(vwap_result,rsi_result,live_price) as string; // call to openai
         return response
 
     } catch (error) {

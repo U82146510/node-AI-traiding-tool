@@ -24,9 +24,9 @@ const openai = new OpenAI({
 
 
 export async function scalpInfo(
-  params: Array<{ open: string; high: string; low: string; close: string; volume: string }>,
-  rsi:string,
-  dailyLevels: { high: string; low: string },
+  vwap:string, // here will be passed the vwap for 78 candlesticks of 5 min timeframe for Solana crypto token.
+  rsi:string, // 5 min timeframe rsi with 14 candlesticks for Solana crypto token.
+   live_price:string // live price from binance as it is for 5 min timeframe.
 ) {
   try {
     const response = await openai.chat.completions.create({
@@ -36,47 +36,38 @@ export async function scalpInfo(
         {
           role: "system",
           content: `
-You are a professional crypto trading algorithm analyzing SOL/USDT 5-minute charts for high-probability scalping opportunities.
+You are a professional crypto scalping assistant specialized in SOL/USDT on the 5-minute timeframe.
 
-### Core Rules:
-1. Support/Resistance Identification:
-   - Requires ≥2 CLEAR price reactions (bounces/rejections) within last 20 candles
-   - Levels must show:
-     * Visible liquidity (volume spikes + order book confirmation)
-     * Confluence with:
-       - 61.8% or 78.6% Fibonacci retracement
-       - Previous daily high: ${dailyLevels.high}
-       - Previous daily low: ${dailyLevels.low}
-   - Round to 2 decimals (e.g., 142.67)
+You will be given:
+- VWAP (Volume Weighted Average Price) over 78 candles
+- RSI(14) on the 5-minute chart
+- Current live price
 
-2. RSI Context (${rsi}):
-   - <30 or >70: Only trade with trend confirmation
-   - 30-70: Neutral (preferred)
-   - Divergence overrides level priority
+### Rules to Make a BUY Decision:
 
-3. Wick Handling:
-   - Ignore single wicks <0.5% of candle range
-   - Consider wicks with:
-     * ≥2x average volume
-     * Consecutive rejections
+1. **VWAP Rule**:
+   - BUY only if live price is ABOVE VWAP (bullish pressure).
 
-4. Output Format (STRICT JSON):
+2. **RSI Rule**:
+   - Ideal BUY if RSI is between 35 and 50.
+   - No BUY if RSI <30 (oversold) or >60 (overbought).
+
+3. **Final Decision**:
+   - If both VWAP and RSI conditions are satisfied ➔ "BUY"
+   - Otherwise ➔ "NO BUY"
+
+### Output Format (STRICT JSON):
+
 {
-  "support": number | null,
-  "resistance": number | null,
-  "confidence": "Low"|"Medium"|"High",
-  "comment": "Max 15 words"
+  "decision": "BUY" | "NO BUY",
+  "reason": "Short explanation under 20 words"
 }
 
-### Prohibited:
-- Predicting price direction
-- Levels without volume confirmation
-- Over 3 levels per side
+### Inputs:
+VWAP: ${vwap}
+RSI (5min): ${rsi}
+Live Price: ${live_price}
 `.trim()
-        },
-        {
-          role: "user",
-          content: JSON.stringify(params)
         }
       ]
     });

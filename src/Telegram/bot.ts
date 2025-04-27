@@ -5,7 +5,9 @@ import { fileURLToPath } from 'url';
 import { calculate_atr } from '../middleware/atr.ts';
 import { rsi } from '../middleware/rsi.ts';
 import { rt_deepseek } from '../middleware/calculate_deepseek.ts';
+import {vwap} from '../middleware/vwap.ts';
 import path from 'path';
+import {s_r} from '../middleware/scalp_zones.ts'
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -27,6 +29,7 @@ export const bot = new Bot(api);
 const menu = new Keyboard()
   .text("scalp").text("rsi5min").text("atr5min").row()
   .text("range").text("rsi").text("atr").row()
+  .text("vwap5min").text("manual_5min_zones").row()
   .resized(); // fit to screen
 
 // ✅ Start command with buttons
@@ -35,7 +38,18 @@ bot.command('start', (ctx) => {
     `
 📊 *Welcome to the SOLANA Trading Bot!*
 
-Tap a button below to start your analysis:
+━━━━━━━━━━━━━━━━━━━━
+🔹 *scalp* — Scalping analysis based on the last 30-78 candles (5-minute timeframe)
+🔹 *rsi5min* — RSI(14) calculation on 5-minute candles
+🔹 *atr5min* — ATR and risk/reward levels on 5-minute candles
+🔹 *range* — Range trading detection using DeepSeek on 1-hour candles
+🔹 *rsi* — RSI(14) calculation on 1-hour candles
+🔹 *atr* — ATR and risk/reward levels on 1-hour candles
+🔹 *vwap5min* — VWAP calculation based on 5-minute candles
+🔹 *manual_5min_zones* — Manual support/resistance zone detection on 5-minute candles
+━━━━━━━━━━━━━━━━━━━━
+
+📥 *Tap a button below to start your analysis!*
     `,
     {
       parse_mode: 'Markdown',
@@ -45,12 +59,20 @@ Tap a button below to start your analysis:
 });
 
 
+
 bot.on('message', async (input) => {
   const text = input.message.text?.toLowerCase();
   if (!text) return;
 
   try {
-    if (text === 'atr') {
+    if(text === 'manual_5min_zones'){
+      const response = await s_r("78");
+      await input.reply(`Support: ${response?.supportLevels}\nResistance: ${response?.resistanceLevels}`, 
+      { reply_markup: menu });
+    } else if(text === 'vwap5min'){
+      const response = await vwap();
+      await input.reply(response, { reply_markup: menu });
+    } else if (text === 'atr') {
       const response = await calculate_atr();
       await input.reply(`Live: ${response.live_price.toString()}\nPofit: ${response.profit.toString()}\nStop: ${response.stop_loss.toString()}`, 
       { reply_markup: menu });
@@ -71,8 +93,6 @@ bot.on('message', async (input) => {
       const response = await calculate_atr("5m");
       await input.reply(`Live: ${response.live_price.toString()}\nPofit: ${response.profit.toString()}\nStop: ${response.stop_loss.toString()}`, 
       { reply_markup: menu });
-    } else if (text === 'exit') {
-      await input.reply("👋 Bot session ended. Type /start to begin again.");
     } else {
       await input.reply("❌ Invalid command. Use the menu below.", { reply_markup: menu });
     }

@@ -2,7 +2,7 @@ import {get_data} from '../API/binance.http.ts';
 
 
 export async function rsi(interval:"1m"|"5m"|"15m"|"30m"|"1h"|"4h"|"1d"="1h"):Promise<string>{
-    const raw_data = await get_data("15",interval);
+    const raw_data = await get_data("14",interval);
     const ccp:number[] = []; // collect closing price.
     const cdc:number[] = []; // calculate daily changes.
     const gains:number[] = [] // push all gains 
