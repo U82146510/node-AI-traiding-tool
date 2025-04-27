@@ -74,7 +74,7 @@ bot.on('message', async (input) => {
       await input.reply(response, { reply_markup: menu });
     } else if (text === 'atr') {
       const response = await calculate_atr();
-      await input.reply(`Live: ${response.live_price.toString()}\nPofit: ${response.profit.toString()}\nStop: ${response.stop_loss.toString()}`, 
+      await input.reply(response, 
       { reply_markup: menu });
     } else if (text === 'scalp') {
       const response = await scalp('30') as string;
@@ -91,7 +91,7 @@ bot.on('message', async (input) => {
       await input.reply(response, { reply_markup: menu });
     } else if (text === 'atr5min') {
       const response = await calculate_atr("5m");
-      await input.reply(`Live: ${response.live_price.toString()}\nPofit: ${response.profit.toString()}\nStop: ${response.stop_loss.toString()}`, 
+      await input.reply(response, 
       { reply_markup: menu });
     } else {
       await input.reply("❌ Invalid command. Use the menu below.", { reply_markup: menu });
