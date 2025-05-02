@@ -72,7 +72,7 @@ function start_cli() {
       process.exit(0);
     }
     if (command === "sr5min") {
-      const response = await s_r("78"); // Manual S/R for 5min
+      const response = await s_r("180"); // Manual S/R for 5min
       console.log(response);
     } else if (command === 'atr') {
       await calculate_atr();

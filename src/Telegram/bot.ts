@@ -66,7 +66,7 @@ bot.on('message', async (input) => {
 
   try {
     if(text === 'manual_5min_zones'){
-      const response = await s_r("78");
+      const response = await s_r("180");
       await input.reply(`Support: ${response?.supportLevels}\nResistance: ${response?.resistanceLevels}`, 
       { reply_markup: menu });
     } else if(text === 'vwap5min'){
